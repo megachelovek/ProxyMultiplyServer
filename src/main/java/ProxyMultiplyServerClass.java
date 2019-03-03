@@ -1,6 +1,6 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.google.gson.Gson;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -11,22 +11,23 @@ public class ProxyMultiplyServerClass {
     private static Socket clientSocket;
     private static final String HOST_NAME= "localhost";
     public static void ConnectToClient() throws IOException {
-        byte[] bytes = null;
+        Gson gson = new Gson();
+        String data;
         server = new ServerSocket(SOCKET);
         clientSocket = server.accept();
-        InputStream input= clientSocket.getInputStream();
-        input.read(bytes);
-        ByteBuffer buf2 = ByteBuffer.wrap(bytes);
-        double[] arrDouble = new double[bytes.length / 8];
-        for (int i = 0; i < arrDouble.length; i++) {
-            arrDouble[i] = buf2.getDouble(i * 8);
+        PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true);
+        BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+        while ((data = br.readLine()) != null) {
+            double[] arrDouble = gson.fromJson(data,double[].class);
+            double result = arrDouble[0] *arrDouble[1];
+            String json = gson.toJson(result);
+            pw.println(json);
         }
 
-        double result = arrDouble[0] * arrDouble[1];
-        OutputStream outStream = clientSocket.getOutputStream();
-        byte[] byteResult = new byte[8];
-        ByteBuffer buf = ByteBuffer.wrap(bytes);
-        buf.putDouble(result);
-        outStream.write(byteResult);
+        pw.close();
+        br.close();
+
+        clientSocket.close();
     }
 }
