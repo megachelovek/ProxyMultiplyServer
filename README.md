@@ -1,6 +1,6 @@
 # Proxy pattern Laboratory work (Multiply Server)
 
-One of the code pattern laboratory work at the university. Implemented Proxy pattern.
+One of the code pattern laboratory work at the university. Implemented Proxy pattern. 
 
 ### Technology stack / Libraries
   - Java
